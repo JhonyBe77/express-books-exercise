@@ -9,12 +9,12 @@ app.use(express.json());
 
 // GET http://localhost:3000/all
 app.get('/all', (req, res) => {
-    res.json(books);
+    res.send(books);
 });
 
 // GET http://localhost:3000/first
 app.get("/first", (req, res) => {
-    res.json(
+    res.send(
         books[0]
     );
 });
@@ -22,27 +22,25 @@ app.get("/first", (req, res) => {
 // GET http://localhost:3000/last
 app.get('/last', (req, res) => {
     const lastBook = books[books.length - 1]; // Obtiene el último libro del arreglo
-    res.json(lastBook);
+    res.send(lastBook);
 });
 
 // GET http://localhost:3000/middle
 app.get("/middle", (req, res) => {
-    res.json(
-        books[Math.round((books.length - 1)/2)]
-    );
+    res.send(books[Math.round((books.length - 1)/2)]);
 });
 
 // GET http://localhost:3000/author/dante-alighieri
 app.get('/author/:authorName', (req, res) => {
         books.forEach(book => {
-            book.author == 'Dante Alighieri' ?  res.json(book.title) : ""
+            book.author == 'Dante Alighieri' ? res.json(book.title) : ""
         })
     });
 
 // GET http://localhost:3000/country/charles-dickens
 app.get('/country/:authorName', (req, res) => {
     books.forEach(book => {
-        book.author == 'Charles Dickens' ?  res.json(book.country) : ""
+        book.author == 'Charles Dickens' ? res.json(book.country) : ""
     })
 });
 
@@ -51,7 +49,7 @@ app.get('/year&pages/:authorName', (req, res) => {
     books.forEach(book => {
         if (book.author == 'Miguel de Cervantes'){
             let pageAndYear = {pages: book.pages,year: book.year}
-            res.json(pageAndYear)
+            res.send(pageAndYear)
         }
     })
 });
