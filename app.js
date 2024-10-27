@@ -7,14 +7,16 @@ const port = 3000;
 app.use(express.json());
 
 
-// GET http://localhost:3000
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
 // GET http://localhost:3000/all
 app.get('/all', (req, res) => {
     res.json(books);
+});
+
+// GET http://localhost:3000/first
+app.get("/first", (req, res) => {
+    res.json(
+        books[0]
+    );
 });
 
 // GET http://localhost:3000/last
@@ -24,88 +26,61 @@ app.get('/last', (req, res) => {
 });
 
 // GET http://localhost:3000/middle
-app.get('/middle', (req, res) => {
-    const middleBook = books[49]; // Obtiene el libro en la posición 50 (índice 49)
-    res.json(middleBook);
+app.get("/middle", (req, res) => {
+    res.json(
+        books[Math.round((books.length - 1)/2)]
+    );
 });
 
 // GET http://localhost:3000/author/dante-alighieri
 app.get('/author/:authorName', (req, res) => {
-    const authorName = req.params.authorName.toLowerCase().replace(/-/g, ' ');  // Poner en minisculas y convertir guiones a espacios
-    /* // Mostrar todos los autores para verificar el formato
-    console.log("Autores disponibles:", books.map(b => b.author));
- */
-    // Buscar libro por autor ignorando mayúsculas/minúsculas
-    const book = books.find(b => b.author.toLowerCase() === authorName);
-
-    if (book) {
-        res.json({ title: book.title });
-    } else {
-        res.status(404).send('Autor no encontrado');
-    }
-});
+        books.forEach(book => {
+            book.author == 'Dante Alighieri' ?  res.json(book.title) : ""
+        })
+    });
 
 // GET http://localhost:3000/country/charles-dickens
 app.get('/country/:authorName', (req, res) => {
-    const authorName = req.params.authorName.toLowerCase().replace(/-/g, ' ');
-    const book = books.find(b => b.author.toLowerCase() === authorName);
-
-    if (book) {
-        res.json({ country: book.country });
-    } else {
-        res.status(404).send('Autor no encontrado');
-    }
+    books.forEach(book => {
+        book.author == 'Charles Dickens' ?  res.json(book.country) : ""
+    })
 });
 
 // GET http://localhost:3000/year&pages/miguel-de-cervantes
 app.get('/year&pages/:authorName', (req, res) => {
-    const authorName = req.params.authorName.toLowerCase().replace(/-/g, ' ').normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Elimina los acentos
-
-    // Mostrar el autor procesado y los autores disponibles
-    console.log("Autor buscado:", authorName);
-    console.log("Autores en el archivo:", books.map(b => b.author.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
-
-    const book = books.find(b => b.author.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === authorName);
-
-    if (book) {
-        res.json({ pages: book.pages, year: book.year });
-    } else {
-        res.status(404).send('Autor no encontrado');
-    }
+    books.forEach(book => {
+        if (book.author == 'Miguel de Cervantes'){
+            let pageAndYear = {pages: book.pages,year: book.year}
+            res.json(pageAndYear)
+        }
+    })
 });
 
 
 // GET http://localhost:3000/country/count/spain
 app.get('/country/count/:countryName', (req, res) => {
-    const countryName = req.params.countryName.toLowerCase();
-
-    const bookCount = books.filter(b => 
-        b.country.toLowerCase() === countryName
-    ).length;
-
-    res.json({ count: bookCount });
+    let counter = 0;
+    books.forEach(book => {book.country ==='Spain' ? counter++ : ""})
+    res.json(counter);
 });
 
 // GET http://localhost:3000/country/at-least/germany
-app.get('/country/at-least/:countryName', (req, res) => {
-    const countryName = req.params.countryName.toLowerCase();
-
-    const hasBook = books.some(b => 
-        b.country.toLowerCase() === countryName
-    );
-
-    res.json({ hasBook });
+app.get("/country/at-least/germany", (req, res) => {
+    let oneGerman = false;
+    books.forEach(book => {book.country === 'Germany' ? oneGerman = true : "";})
+    res.json(oneGerman);
 });
 
 // GET http://localhost:3000/pages/all-greater/200
-app.get('/pages/all-greater/:pageCount', (req, res) => {
-    const pageCount = parseInt(req.params.pageCount, 10);
+app.get("/pages/all-greater/200", (req, res) => {
+    let allMoreThan100 = true;
+    books.forEach(book => {book.pages < 200 ?  allMoreThan100 = false : "";})
+    res.json(allMoreThan100);
+});
 
-    const allGreater = books.every(b => 
-        b.pages > pageCount
-    );
-
-    res.json({ allGreater });
+// Para ruta no existente
+app.use("*",(req, res) => {
+  res.send("Ruta no encontrada");
 });
 
 
