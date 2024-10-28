@@ -1,8 +1,8 @@
 const books = require('./data/books.json');
 const express = require('express');
 
-const app = express();
-const port = 3000;
+const app = express(); // crea el servidor
+const port = 3000; //Puerto que utiliza
 
 app.use(express.json());
 
@@ -14,9 +14,7 @@ app.get('/all', (req, res) => {
 
 // GET http://localhost:3000/first
 app.get("/first", (req, res) => {
-    res.send(
-        books[0]
-    );
+    res.send(books[0]);
 });
 
 // GET http://localhost:3000/last
@@ -62,23 +60,21 @@ app.get('/country/count/:countryName', (req, res) => {
     res.json(counter);
 });
 
-// GET http://localhost:3000/country/at-least/germany
+// GET http://localhost:3000/country/at-least/germany método some
 app.get("/country/at-least/germany", (req, res) => {
-    let oneGerman = false;
-    books.forEach(book => {book.country === 'Germany' ? oneGerman = true : "";})
+    const oneGerman = books.some(book => book.country === 'Germany');
     res.json(oneGerman);
 });
 
 // GET http://localhost:3000/pages/all-greater/200
 app.get("/pages/all-greater/200", (req, res) => {
-    let allMoreThan100 = true;
-    books.forEach(book => {book.pages < 200 ?  allMoreThan100 = false : "";})
-    res.json(allMoreThan100);
+    const allMoreThan200 = books.every(book => book.pages > 200);
+    res.json(allMoreThan200);
 });
 
 // Para ruta no existente
-app.use("*",(req, res) => {
-  res.send("Ruta no encontrada");
+app.use("*", (req, res) => {
+    res.send("Ruta no encontrada");
 });
 
 
